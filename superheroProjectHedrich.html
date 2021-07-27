@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+  
+    <head>
+        <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+      <!--bootstrap stylesheet-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    
+     <!--bootstrap/jquery/popper-->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+   
+    <!--Google Fonts-->
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+    
+    <!--Font Awesome For Linkedin button-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    
+      <!--stylesheet - mine-->
+         
+        
+
+
+     <!--my js file-->
+
+     
+     
+    
+         <title>Superheroes</title>
+    </head>
+  <body>
+    <main>
+  
+   
+    <div id="mainDiv" class="container">
+        <h1 class="text-center">Superheroes</h1>
+        <p class="text-center">Type or paste a superhero name in the search bar and click submit to learn more about them</p>
+      <div id="app"></div>
+    
+       
+      </div>
+
+
+    </main>
+
+    <!---Deploy React -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script  src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <!--Load React Component -->
+    <script type="text/babel" >
+    'use strict';
+
+    class Superhero extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      error: null,
+      isLoaded: false,
+      superheroes: []
+    };
+  }
+
+  componentDidMount() {
+    fetch("https://akabab.github.io/superhero-api/api/all.json")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            isLoaded: true,
+            superheroes: result
+          });
+        },
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
+  }
+
+
+  render() {
+    const { error, isLoaded, superheroes } = this.state;
+    if (error) {
+      return <div>Error: {error.message}</div>;
+    } else if (!isLoaded) {
+      return <div>Loading...</div>;
+    } else {
+     
+    
+      return (
+         <div>
+        <SuperheroSearch heroArray={superheroes} />
+        <SuperheroListDisplay heroArray={superheroes} />
+        </div>
+      );
+    }
+  }
+}
+
+class SuperheroListDisplay extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    
+  }
+
+render() {
+    
+      return (
+         
+          <div>
+            <table style={{margin:"auto"}}>
+            <thead>
+                <tr >
+                    <th>Name</th>
+                    <th>Publisher</th>
+                    <th>Gender</th>
+                    <th>Race</th>
+                </tr>
+            </thead>
+            <tbody>
+          {this.props.heroArray.map(hero => (
+            <tr key={hero.id}>
+            <td >
+              {hero.name} 
+            </td>
+            <td >
+              {hero.biography.publisher} 
+            </td>
+            <td>
+              {hero.appearance.gender} 
+            </td>
+            <td >
+              {hero.appearance.race} 
+            </td>
+            </tr>
+             ))}
+             </tbody>
+            </table>
+           
+           </div>
+
+      );
+    }
+  
+}
+
+class SuperheroSearch extends React.Component {
+  constructor(props) {
+    super(props); 
+    this.state = {
+      input: '',
+      submit: '',
+      name: '',
+      index: ''
+    };
+    this.handleChange = this.handleChange.bind(this);
+    this.selectHero = this.selectHero.bind(this);
+  }
+    handleChange(event){
+        this.setState({
+            input: event.target.value
+        });
+    }
+
+
+    selectHero(event){
+        event.preventDefault();
+        this.setState({
+            name: '',
+            index: ''
+        });
+        var newEntry = true;
+        for(let i=0; i<this.props.heroArray.length; i++)
+        {
+           
+            if(this.state.input.toLowerCase() == this.props.heroArray[i].name.toLowerCase())
+            {
+                this.setState({
+                    name: this.props.heroArray[i].name,
+                    index: i
+                });
+                newEntry = false;
+            }
+        }
+        if (newEntry == true){
+            this.setState({
+                    name: "Please check your entry.  Hero not found."
+                });
+        }
+
+}
+
+render() {
+    if(this.state.name != '' && this.state.name != "Please check your entry.  Hero not found.")
+    {
+      return (
+         
+          <div className="text-center">
+            <form onSubmit={this.selectHero}>
+                <input value={this.state.input}
+                onChange={this.handleChange}/>
+                <button type='submit'>Submit</button>
+            </form>
+           <br />
+           
+           <SuperheroSearchDisplay heroArray={this.props.heroArray} thisHero={this.state.name} thisIndex={this.state.index} /> 
+           </div>
+
+      );
+        }
+
+        else
+        {
+      return (
+         
+          <div className="text-center">
+            <form onSubmit={this.selectHero}>
+                <input value={this.state.input}
+                onChange={this.handleChange}/>
+                <button type='submit'>Submit</button>
+            </form>
+           <br />
+           <h4>{this.state.name}</h4>
+           </div>
+    
+        );
+        }
+    }
+  
+}
+
+
+
+class SuperheroSearchDisplay extends React.Component {
+  constructor(props) {
+    super(props); 
+    this.state = {
+
+    };
+
+  }
+   
+render() {
+
+    
+      return (
+         
+          <div className="text-center">
+            <h4>Superhero Name: {this.props.thisHero}</h4>
+            <br />
+            <div className="row">
+                <div className="col-sm-2"></div>
+           <img className="col-lg-2 img-fluid" style={{objectFit: "contain", maxHeight: "300px"}} alt="Image of Superhero" src={this.props.heroArray[this.props.thisIndex].images.sm} /> 
+           
+           <div className="col-sm-3">
+            <br/>    
+            
+            <p>
+                  <strong> Full Name</strong>: {this.props.heroArray[this.props.thisIndex].biography.fullName}
+                </p>
+                <p>
+                    <strong>Alter Egos</strong>: {this.props.heroArray[this.props.thisIndex].biography.alterEgos}
+                </p>
+                <p>
+                    <strong>Birthplace</strong>: {this.props.heroArray[this.props.thisIndex].biography.placeOfBirth}
+                </p>
+                <p>
+                    <strong>First Appearance</strong>: {this.props.heroArray[this.props.thisIndex].biography.firstAppearance}
+                </p>
+                <p>
+                    <strong>Occupation</strong>: {this.props.heroArray[this.props.thisIndex].work.occupation}
+                </p>
+            </div>
+
+           <div className="col-sm-3">
+                <p><strong>Power Stats</strong></p>
+                <p>
+                    <strong>Intelligence</strong>: {this.props.heroArray[this.props.thisIndex].powerstats.intelligence}
+                </p>
+                <p>
+                    <strong>Strength</strong>: {this.props.heroArray[this.props.thisIndex].powerstats.strength}
+                </p>
+                <p>
+                    <strong>Speed</strong>: {this.props.heroArray[this.props.thisIndex].powerstats.speed}
+                </p>
+                <p>
+                    <strong>Durability</strong>: {this.props.heroArray[this.props.thisIndex].powerstats.durability}
+                </p>
+                <p>
+                    <strong> Power</strong>: {this.props.heroArray[this.props.thisIndex].powerstats.power}
+                </p>
+                <p>
+                    <strong>Combat</strong>: {this.props.heroArray[this.props.thisIndex].powerstats.combat}
+                </p>
+            </div>
+            
+            </div>
+           <br />
+           <br />
+           </div>
+
+      );
+    }
+  
+}
+
+
+ReactDOM.render(<Superhero />, document.getElementById('app'));
+
+    
+    </script>
+
+    
+    </main>
+
+  </body>
+</html>
