@@ -1,3 +1,5 @@
+<!--This is the code for a project using the superhero API. This page displays all of the superhero names with a search function to pull more information about any character in the list.  I used React, Javascript and JSX for this project.  This page is made up of four react components: Superhero, which pulls the API, SuperheroListDisplay which displays all the names in the array as a list along with the publisher, gender and race for each character, SuperheroSearch which takes in information from the search box and then passes that infomration as props to the SuperheroSearchDisplay component which displays more information about the character.  Note that this page is using babel to process so all HTML/Script can be on the same page and in line styles are used as I thouht it would be easiest to read in one document.   -->
+
 <!DOCTYPE html>
 <html>
   
@@ -17,8 +19,11 @@
    
     <!--Google Fonts-->
     <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
-
-
+    
+    <!--Font Awesome For Linkedin button-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+     
     
          <title>Superheroes</title>
     </head>
@@ -29,7 +34,8 @@
     <div id="mainDiv" class="container">
         <h1 class="text-center">Superheroes</h1>
         <p class="text-center">Type or paste a superhero name in the search bar and click submit to learn more about them</p>
-      <div id="app"></div>
+     <!--Div to render react-->
+        <div id="app"></div>
     
        
       </div>
@@ -45,6 +51,7 @@
     <script type="text/babel" >
     'use strict';
 
+ /*Superhero React component brings in the superhero api array and passes it as props to two other components.  This component is rendered to the DOM at the bottom of the page.   */
     class Superhero extends React.Component {
   constructor(props) {
     super(props);
@@ -55,6 +62,7 @@
     };
   }
 
+  /*Component did mount function is used to fetch the api and load the superheroes array */
   componentDidMount() {
     fetch("https://akabab.github.io/superhero-api/api/all.json")
       .then(res => res.json())
@@ -86,6 +94,7 @@
     
       return (
          <div>
+    {/*Array of superheroes is passed as props to the search and list display components */}
         <SuperheroSearch heroArray={superheroes} />
         <SuperheroListDisplay heroArray={superheroes} />
         </div>
@@ -94,6 +103,7 @@
   }
 }
 
+/*SuperheroListDisplay displays the full list of superheroes */
 class SuperheroListDisplay extends React.Component {
   constructor(props) {
     super(props);
@@ -105,6 +115,7 @@ render() {
     
       return (
          
+      /*heroArray was passed as props from the Superhero component.  The map function is used to populate the table*/
           <div>
             <table style={{margin:"auto"}}>
             <thead>
@@ -142,18 +153,20 @@ render() {
   
 }
 
+/*SuperheroSearch gets the input from the user and checks for a match in the superhero array.  If a match is found the index of the selected character, that character's name and the array are passed as props to the SuperheroSearchDisplay Component */
 class SuperheroSearch extends React.Component {
   constructor(props) {
     super(props); 
     this.state = {
       input: '',
-      submit: '',
       name: '',
       index: ''
     };
     this.handleChange = this.handleChange.bind(this);
     this.selectHero = this.selectHero.bind(this);
   }
+
+
     handleChange(event){
         this.setState({
             input: event.target.value
@@ -163,11 +176,10 @@ class SuperheroSearch extends React.Component {
 
     selectHero(event){
         event.preventDefault();
-        this.setState({
-            name: '',
-            index: ''
-        });
+       /*newEntry will be used to check if the user's input has match in the heroArray.  newEntry is set to false if the if statement below evaluates true.  If newEntry is true after running through the array then the name variable will be set to an error message */
         var newEntry = true;
+
+        /*for statement to iterate through array.  If a match is found then the state variable name is set to the name of the hero and the index is set to the index value where the hero is located */
         for(let i=0; i<this.props.heroArray.length; i++)
         {
            
@@ -189,6 +201,7 @@ class SuperheroSearch extends React.Component {
 }
 
 render() {
+    /*If statement checks to see if the state variable name is empty as it is on the first load of the page or if it has the error message.  In either situation the SuperheroSearchDisplay component should not be used since there will be no props to send into it and error would occur.  When name has a valid superhero name the heroArray, hero name and index of their location is passed as props to the Display component  */  
     if(this.state.name != '' && this.state.name != "Please check your entry.  Hero not found.")
     {
       return (
@@ -209,6 +222,7 @@ render() {
 
         else
         {
+    /* If there is no valid name in the name state varible then just the search function is displayed with an h4 element added to display the error message if the user doesn't enter a name with a match.  On page load it is an empty string and displays nothing */
       return (
          
           <div className="text-center">
@@ -228,7 +242,7 @@ render() {
 }
 
 
-
+/*SuperheroSearch display componenet displays the biographical information and a photo for the hero the user typed into the search bar */
 class SuperheroSearchDisplay extends React.Component {
   constructor(props) {
     super(props); 
@@ -302,7 +316,7 @@ render() {
   
 }
 
-
+/*Render superhero react component to DOM */
 ReactDOM.render(<Superhero />, document.getElementById('app'));
 
     
