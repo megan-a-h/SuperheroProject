@@ -181,7 +181,7 @@ class SuperheroSearch extends React.Component {
         for(let i=0; i<this.props.heroArray.length; i++)
         {
            
-            if(this.state.input.toLowerCase() == this.props.heroArray[i].name.toLowerCase())
+            if(this.state.input.toLowerCase().trim() == this.props.heroArray[i].name.toLowerCase())
             {
                 this.setState({
                     name: this.props.heroArray[i].name,
